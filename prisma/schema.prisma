@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String
+  password String
+  role     String
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String
+  price       Int
+  description String?
+  stock       Int
+  categoryId  Int
+}
+
+model Table {
+  id     Int    @id @default(autoincrement())
+  number Int
+  qrCode String
+}
+
+model Order {
+  id      Int    @id @default(autoincrement())
+  tableId Int
+  total   Int
+  status  String
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        Int @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  note      String?
+
+  order     Order @relation(fields: [orderId], references: [id])
+}
+
+model Payment {
+  id      Int @id @default(autoincrement())
+  orderId Int
+  method  String
+  amount  Int
+}
