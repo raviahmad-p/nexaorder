@@ -17,6 +17,8 @@ model User {
 model Category {
   id   Int    @id @default(autoincrement())
   name String
+
+  products Product[]
 }
 
 model Product {
@@ -26,6 +28,8 @@ model Product {
   description String?
   stock       Int
   categoryId  Int
+
+  category Category @relation(fields: [categoryId], references: [id])
 }
 
 model Table {
@@ -35,26 +39,29 @@ model Table {
 }
 
 model Order {
-  id      Int    @id @default(autoincrement())
+  id      Int         @id @default(autoincrement())
   tableId Int
   total   Int
   status  String
-  items OrderItem[]
+  items   OrderItem[]
+  payment Payment?
 }
 
 model OrderItem {
-  id        Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   orderId   Int
   productId Int
   quantity  Int
   note      String?
 
-  order     Order @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
 }
 
 model Payment {
-  id      Int @id @default(autoincrement())
-  orderId Int
+  id      Int    @id @default(autoincrement())
+  orderId Int    @unique
   method  String
   amount  Int
+
+  order Order @relation(fields: [orderId], references: [id])
 }

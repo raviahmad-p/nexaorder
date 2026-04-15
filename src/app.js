@@ -1,41 +1,36 @@
 require('dotenv').config()
 const express = require('express')
-const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient()
 const app = express()
 
+// middleware
 app.use(express.json())
 
+// import routes
+const categoryRoutes = require('./routes/categoryRoutes')
 const productRoutes = require('./routes/productRoutes')
 const orderRoutes = require('./routes/orderRoutes')
-
-app.use('/products', productRoutes)
-app.use('/orders', orderRoutes)
-
 const paymentRoutes = require('./routes/paymentRoutes')
 
+// gunakan routes
+app.use('/categories', categoryRoutes)
+app.use('/products', productRoutes)
+app.use('/orders', orderRoutes)
 app.use('/payments', paymentRoutes)
 
-
-app.post('/categories', async (req, res) => {
-  try {
-    const { name } = req.body
-
-    const category = await prisma.category.create({
-      data: { name }
-    })
-
-    res.json(category)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-})
-
+// route default (opsional, biar tau server hidup)
 app.get('/', (req, res) => {
-  res.send('Backend Nexa Order jalan 🚀')
+  res.send('API NexaOrder berjalan 🚀')
 })
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000')
+// jalankan server
+const PORT = 3000
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
+
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Endpoint tidak ditemukan"
+  })
 })
